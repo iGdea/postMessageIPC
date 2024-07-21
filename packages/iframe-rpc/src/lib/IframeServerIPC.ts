@@ -51,6 +51,7 @@ export class IframeServerIPC {
   private serverAPIs: { [handlerName: string]: Function }
 
   private namespace: string
+  private hasInitedClient: boolean;
   protected namespacePre = '$iframe_ipc_svr'
 
   constructor(
@@ -61,7 +62,7 @@ export class IframeServerIPC {
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
 
-    this.initClient();
+    this.hasInitedClient = false;
   }
 
   public defServerAPI<Args extends any[], Result>(
@@ -112,7 +113,8 @@ export class IframeServerIPC {
     });
   }
 
-  private callApi<Args extends any[], Result>(api: string, args?: Args): Promise<Result> {
+    this.initClient();
+
     const callid = uniqId();
 
     (this.optioins?.serverFrame || parent)?.postMessage({
@@ -135,6 +137,9 @@ export class IframeServerIPC {
   }
 
   private initClient(): void {
+    if (this.hasInitedClient) return;
+    this.hasInitedClient = true;
+
     window.addEventListener('message', (event) => {
       const data = event.data?.[this.namespace] as ReturnMessage<any, any>;
 
