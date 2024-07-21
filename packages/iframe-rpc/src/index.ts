@@ -47,14 +47,14 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 
 
 export class IframeIPC {
-  private callbackHandlers: { [callid: string]: Callback }
+  private promiseCallbackHandlers: { [callid: string]: Callback }
   private serverAPIs: { [handlerName: string]: (...args: any[]) => Promise<any> }
 
   constructor(
     private namespace: string,
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {
-    this.callbackHandlers = {};
+    this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
 
     this.initClient();
@@ -68,6 +68,7 @@ export class IframeIPC {
 
     return (...args: Args) => this.callApi<Args, Result>(api, args);
   }
+
 
   public initFrameServer(): void {
     window.addEventListener('message', (event) => {
@@ -116,7 +117,7 @@ export class IframeIPC {
     }, this.optioins?.host || '*');
 
     return new Promise((resolve, reject) => {
-      this.callbackHandlers[callid] = {
+      this.promiseCallbackHandlers[callid] = {
         resolve,
         reject,
       };
@@ -128,9 +129,9 @@ export class IframeIPC {
       const data = event.data?.[this.namespace] as CallMessage<any> | ReturnMessage<any, any>;
 
       if (isReturnMessage(data)) {
-        const handler = this.callbackHandlers[data.callid];
+        const handler = this.promiseCallbackHandlers[data.callid];
         if (handler) {
-          delete this.callbackHandlers[data.callid];
+          delete this.promiseCallbackHandlers[data.callid];
 
           if (data.data.iserr) {
             handler.reject(data.data.error);
