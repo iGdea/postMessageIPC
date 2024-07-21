@@ -74,12 +74,22 @@ export class IframeServerAPIWithTempAPI {
     return funcid;
   }
 
-  public undefTempAPI(funcid: string): void {
-    const apikey = `tempapi/${funcid}`;
-    delete this.iframeMessage.serverAPIs[apikey];
+  public undefTempAPI(funcid: string | TempAPI<any, any>): void {
+    if (typeof funcid === 'string') {
+      const apikey = `tempapi/${funcid}`;
+      delete this.iframeMessage.serverAPIs[apikey];
 
-    for (const [val, key] of this.tempAPIs) {
-      if (key === funcid) this.tempAPIs.delete(val);
+      for (const [val, key] of this.tempAPIs) {
+        if (key === funcid) this.tempAPIs.delete(val);
+      }
+    } else {
+      const handler = funcid;
+      const funcid2 = this.tempAPIs.get(handler);
+      if (funcid2) {
+        const apikey = `tempapi/${funcid2}`;
+        delete this.iframeMessage.serverAPIs[apikey];
+        this.tempAPIs.delete(handler);
+      }
     }
   }
 
