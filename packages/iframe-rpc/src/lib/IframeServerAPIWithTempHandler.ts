@@ -29,10 +29,7 @@ export class IframeServerAPIWithTempHandler {
     }
 
     this.iframeMessage.serverAPIs[apikey] = (event, funcids: string[], ...args: Args) => {
-      const callTempApi = (funcid: string, ...args: any[]) => {
-        if (!event.source) throw new Error(`miss event.source: ${funcid}`);
-        return this.iframeMessage.callApi(event.source, `temphandler/${funcid}`, args);
-      };
+      const callTempApi = this.genCallTempApi(event.source);
       const handlers = funcids.reduce((map, funcid) => {
         map[funcid] = (...args: any[]) => callTempApi(funcid, args);
         return map;
@@ -56,11 +53,7 @@ export class IframeServerAPIWithTempHandler {
     const apikey = `temphandler/${funcid}`;
 
     this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => {
-      const callTempApi = (funcid: string, ...args: any[]) => {
-        if (!event.source) throw new Error(`miss event.source: ${funcid}`);
-        return this.iframeMessage.callApi(event.source, `temphandler/${funcid}`, args);
-      };
-
+      const callTempApi = this.genCallTempApi(event.source);
       return handler({ event, callTempApi }, ...args);
     };
 
@@ -74,5 +67,15 @@ export class IframeServerAPIWithTempHandler {
 
   private initFrameServer(): void {
     return this.iframeMessage.initFrameServer();
+  }
+
+  /**
+   * 通过 MessageEventSource 创建快速调用funcid的方法
+   */
+  private genCallTempApi(source: MessageEventSource | null) {
+    return (funcid: string, ...args: any[]) => {
+      if (!source) throw new Error(`miss event.source: ${funcid}`);
+      return this.iframeMessage.callApi(source, `temphandler/${funcid}`, args);
+    };
   }
 }
