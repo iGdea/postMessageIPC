@@ -67,7 +67,14 @@ export class IframeIPC {
   /**
    * 删除所有的临时函数
    */
-  public undefAllTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.undefAllTempAPI>): void {
-    return this.iframeServerAPITemp.undefAllTempAPI(...args);
+  public undefAllTempAPI(): void {
+    return this.iframeServerAPITemp.undefAllTempAPI();
+  }
+
+  /**
+   * 销毁对象
+   */
+  public destroy(): void {
+    return this.iframeMessage.destroy();
   }
 }

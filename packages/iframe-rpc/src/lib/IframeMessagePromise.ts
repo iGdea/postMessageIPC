@@ -51,16 +51,13 @@ export class IframeMessagePromise {
 
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private namespace: string
-  private hasInitedClient: boolean;
-  private hasInitedFrameServer: boolean;
+  private hasInitedClient: undefined | ((event: MessageEvent) => any)
+  private hasInitedFrameServer: undefined | ((event: MessageEvent) => any)
 
   constructor(namespace: string) {
     this.namespace = `$iframe_ipc_msg/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
-
-    this.hasInitedClient = false;
-    this.hasInitedFrameServer = false;
   }
 
   /**
@@ -68,9 +65,8 @@ export class IframeMessagePromise {
    */
   public initFrameServer(): void {
     if (this.hasInitedFrameServer) return;
-    this.hasInitedFrameServer = true;
 
-    window.addEventListener('message', async (event) => {
+    const func = async (event: MessageEvent) => {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
@@ -100,7 +96,10 @@ export class IframeMessagePromise {
           }
         }
       }
-    });
+    };
+
+    window.addEventListener('message', func, false);
+    this.hasInitedFrameServer = func;
   }
 
   /**
@@ -142,9 +141,8 @@ export class IframeMessagePromise {
    */
   private initClient(): void {
     if (this.hasInitedClient) return;
-    this.hasInitedClient = true;
 
-    window.addEventListener('message', (event) => {
+    const func = (event: MessageEvent) => {
       const data = event.data?.[this.namespace] as ReturnMessage<any, any>;
 
       if (isReturnMessage(data)) {
@@ -159,6 +157,26 @@ export class IframeMessagePromise {
           }
         }
       }
-    });
+    };
+
+    window.addEventListener('message', func, false);
+    this.hasInitedClient = func;
+  }
+
+  destroy() {
+    if (this.hasInitedClient) {
+      const func = this.hasInitedClient;
+      window.removeEventListener('message', func, false);
+      this.hasInitedClient = undefined;
+    }
+
+    if (this.hasInitedFrameServer) {
+      const func = this.hasInitedFrameServer;
+      window.removeEventListener('message', func, false);
+      this.hasInitedFrameServer = undefined;
+    }
+
+    this.promiseCallbackHandlers = {};
+    this.serverAPIs = {};
   }
 }
