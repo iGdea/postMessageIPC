@@ -11,7 +11,7 @@ export class IframeServerAPI {
     api: string,
     handler: (...args: Args) => Promise<Result> | Result,
   ): (...args: Args) => Promise<Result> {
-    const apikey = `serverAPI/${api}`;
+    const apikey = `svr_api/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);

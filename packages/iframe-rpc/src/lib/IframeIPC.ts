@@ -1,11 +1,11 @@
 import { IframeMessagePromise } from './IframeMessagePromise';
 import { IframeServerAPI } from './IframeServerAPI';
-import { IframeServerAPIWithTempHandler } from './IframeServerAPIWithTempHandler';
+import { IframeServerAPIWithTempAPI } from './IframeServerAPIWithTempAPI';
 
 export class IframeIPC {
   iframeMessage: IframeMessagePromise
   iframeServerAPI: IframeServerAPI
-  iframeServerAPITemp: IframeServerAPIWithTempHandler
+  iframeServerAPITemp: IframeServerAPIWithTempAPI
 
   constructor(
     namespace: string,
@@ -14,7 +14,7 @@ export class IframeIPC {
     this.iframeMessage = new IframeMessagePromise(namespace);
 
     this.iframeServerAPI = new IframeServerAPI(this.iframeMessage, optioins);
-    this.iframeServerAPITemp = new IframeServerAPIWithTempHandler(this.iframeMessage, optioins);
+    this.iframeServerAPITemp = new IframeServerAPIWithTempAPI(this.iframeMessage, optioins);
   }
 
   /**
@@ -34,18 +34,18 @@ export class IframeIPC {
   }
 
 
-  public defServerAPIWithTempHandler<Args extends any[], Result>(
-    ...args: Parameters<typeof this.iframeServerAPITemp.defServerAPIWithTempHandler<Args, Result>>
+  public defServerAPIWithTempAPI<Args extends any[], Result>(
+    ...args: Parameters<typeof this.iframeServerAPITemp.defServerAPIWithTempAPI<Args, Result>>
   ) {
-    return this.iframeServerAPITemp.defServerAPIWithTempHandler(...args);
+    return this.iframeServerAPITemp.defServerAPIWithTempAPI(...args);
   }
 
 
-  public genTempHandler(...args: Parameters<typeof this.iframeServerAPITemp.genTempHandler>) {
-    return this.iframeServerAPITemp.genTempHandler(...args);
+  public genTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.genTempAPI>) {
+    return this.iframeServerAPITemp.genTempAPI(...args);
   }
 
-  public removeTempHandler(...args: Parameters<typeof this.iframeServerAPITemp.removeTempHandler>): void {
-    return this.iframeServerAPITemp.removeTempHandler(...args);
+  public removeTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.removeTempAPI>): void {
+    return this.iframeServerAPITemp.removeTempAPI(...args);
   }
 }

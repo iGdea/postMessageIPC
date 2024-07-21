@@ -1,28 +1,28 @@
 import { uniqId } from './uniqId';
 import type { IframeMessagePromise } from './IframeMessagePromise';
 
-type TempHanlderData = {
+type TempAPIData = {
   event: MessageEvent,
   callTempApi: (funcid: string, ...args: any[]) => any,
 };
 
-type TempHandler<Args extends any[], Result> = (data: TempHanlderData, ...args: Args) => Result;
+type TempAPI<Args extends any[], Result> = (data: TempAPIData, ...args: Args) => Result;
 
-export class IframeServerAPIWithTempHandler {
+export class IframeServerAPIWithTempAPI {
 
   constructor(
     private iframeMessage: IframeMessagePromise,
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {}
 
-  public defServerAPIWithTempHandler<Args extends any[], Result>(
+  public defServerAPIWithTempAPI<Args extends any[], Result>(
     api: string,
     handler: (
-      data: TempHanlderData & { handlers: { [funcid: string]: Function } },
+      data: TempAPIData & { handlers: { [funcid: string]: Function } },
       ...args: Args
     ) => Promise<Result> | Result,
   ): (...args: Args) => Promise<Result> {
-    const apikey = `serverAPI_Temp/${api}`;
+    const apikey = `svr_api_temp/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
@@ -46,11 +46,11 @@ export class IframeServerAPIWithTempHandler {
     );
   }
 
-  public genTempHandler<Args extends any[], Result>(handler: TempHandler<Args, Result>): string {
+  public genTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>): string {
     this.initFrameServer();
 
     const funcid = uniqId();
-    const apikey = `temphandler/${funcid}`;
+    const apikey = `tempapi/${funcid}`;
 
     this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => {
       const callTempApi = this.genCallTempApi(event.source);
@@ -60,8 +60,8 @@ export class IframeServerAPIWithTempHandler {
     return funcid;
   }
 
-  public removeTempHandler(funcid: string): void {
-    const apikey = `temphandler/${funcid}`;
+  public removeTempAPI(funcid: string): void {
+    const apikey = `tempapi/${funcid}`;
     delete this.iframeMessage.serverAPIs[apikey];
   }
 
@@ -75,7 +75,7 @@ export class IframeServerAPIWithTempHandler {
   private genCallTempApi(source: MessageEventSource | null) {
     return (funcid: string, ...args: any[]) => {
       if (!source) throw new Error(`miss event.source: ${funcid}`);
-      return this.iframeMessage.callApi(source, `temphandler/${funcid}`, args);
+      return this.iframeMessage.callApi(source, `tempapi/${funcid}`, args);
     };
   }
 }
