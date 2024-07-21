@@ -25,6 +25,10 @@ importers:
         version: 1.0.4
 
   packages/iframe-rpc:
+    dependencies:
+      emit-ts:
+        specifier: ^1.1.0
+        version: 1.1.0
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -3026,6 +3030,10 @@ packages:
   /electron-to-chromium@1.4.752:
     resolution: {integrity: sha512-P3QJreYI/AUTcfBVrC4zy9KvnZWekViThgQMX/VpJ+IsOBbcX5JFpORM4qWapwWQ+agb2nYAOyn/4PMXOk0m2Q==}
     dev: true
+
+  /emit-ts@1.1.0:
+    resolution: {integrity: sha512-asRShb4AOBYzLWoOUj3fE8muHhWEfZj0xsFrivgjkZE/OSpk6B6DTlUi/2WH/ktGJOaH4hqHqOaHORkFDMtGiQ==}
+    dev: false
 
   /emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}

@@ -20,6 +20,7 @@ export class IframeServerAPIWithTempAPI {
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {
     this.tempAPIs = new Map();
+    this.iframeMessage.ondestroy(() => this.tempAPIs.clear());
   }
 
   public defServerAPIExt<Args extends any[], Result>(

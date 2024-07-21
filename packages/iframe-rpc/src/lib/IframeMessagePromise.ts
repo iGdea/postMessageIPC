@@ -1,3 +1,4 @@
+import { Emit } from 'emit-ts';
 import { uniqId } from './uniqId';
 
 
@@ -54,6 +55,7 @@ export class IframeMessagePromise {
 
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private namespace: string
+  private destroyEmit: Emit<void>
   private hasInitedClient: undefined | ((event: MessageEvent) => any)
   private hasInitedFrameServer: undefined | ((event: MessageEvent) => any)
 
@@ -61,6 +63,8 @@ export class IframeMessagePromise {
     this.namespace = `$iframe_ipc_msg/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
+
+    this.destroyEmit = new Emit();
   }
 
   /**
@@ -181,5 +185,11 @@ export class IframeMessagePromise {
 
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
+
+    this.destroyEmit.emit();
+  }
+
+  ondestroy(handler: () => void) {
+    this.destroyEmit.on(handler);
   }
 }
