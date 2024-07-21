@@ -64,6 +64,10 @@ export class IframeIPC {
     api: string,
     handler: (...args: Args) => Promise<Result>,
   ): (...args: Args) => Promise<Result> {
+    if (this.serverAPIs[api]) {
+      throw new Error(`Duplicate Definition ServerAPI: ${api}`);
+    }
+
     this.serverAPIs[api] = handler;
 
     return (...args: Args) => this.callApi<Args, Result>(api, args);

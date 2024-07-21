@@ -18,17 +18,16 @@ npm install iframe-ipc --save
 ```typescript
 import { IframeIPC } from 'iframe-ipc';
 
-const iframeIpc = new IframeIPC('namespace', {
-  dosomething(args) {
-    return result;
-  }
+const iframeIpc = new IframeIPC('namespace');
+const serverApi = iframeIpc.defServerAPI('api123', async (args: number): Promise<string> => {
+  return '' + args;
 });
 
 // top 外层 ifreame
 iframeIpc.initFrameServer();
 
 // client 内层 iframe
-iframeIpc.callApi('dosomething', args).then((result) => console.log(result));
+serverApi(1234).then((result) => console.log(result));
 ```
 
 
