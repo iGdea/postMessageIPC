@@ -1,4 +1,4 @@
-import { getCallId } from './getCallId';
+import { uniqId } from './uniqId';
 
 
 type Callback = {
@@ -49,8 +49,9 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 export class IframeServerIPC {
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private serverAPIs: { [handlerName: string]: Function }
+
   private namespace: string
-  protected namespacePre = 'iframe_rpc_svr'
+  protected namespacePre = '$iframe_ipc_svr'
 
   constructor(
     namespace: string,
@@ -112,7 +113,7 @@ export class IframeServerIPC {
   }
 
   private callApi<Args extends any[], Result>(api: string, args?: Args): Promise<Result> {
-    const callid = getCallId();
+    const callid = uniqId();
 
     (this.optioins?.serverFrame || parent)?.postMessage({
       [this.namespace]: <CallMessage<Args>>{
