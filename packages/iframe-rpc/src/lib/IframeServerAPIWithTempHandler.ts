@@ -1,10 +1,12 @@
 import { uniqId } from './uniqId';
 import type { IframeMessagePromise } from './IframeMessagePromise';
 
-type HanlderData = {
+type TempHanlderData = {
   event: MessageEvent,
   callTempApi: (funcid: string, ...args: any[]) => any,
 };
+
+type TempHandler<Args extends any[], Result> = (data: TempHanlderData, ...args: Args) => Result;
 
 export class IframeServerAPIWithTempHandler {
 
@@ -16,7 +18,7 @@ export class IframeServerAPIWithTempHandler {
   public defServerAPIWithTempHandler<Args extends any[], Result>(
     api: string,
     handler: (
-      data: HanlderData & { handlers: { [funcid: string]: Function } },
+      data: TempHanlderData & { handlers: { [funcid: string]: Function } },
       ...args: Args
     ) => Promise<Result> | Result,
   ): (...args: Args) => Promise<Result> {
@@ -47,7 +49,7 @@ export class IframeServerAPIWithTempHandler {
     );
   }
 
-  public genTempHandler<Args extends any[], Result>(handler: (data: HanlderData, ...args: Args) => Result): string {
+  public genTempHandler<Args extends any[], Result>(handler: TempHandler<Args, Result>): string {
     this.initFrameServer();
 
     const funcid = uniqId();
