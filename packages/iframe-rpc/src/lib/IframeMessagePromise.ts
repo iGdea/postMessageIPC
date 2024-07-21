@@ -46,38 +46,20 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 }
 
 
-export class IframeServerIPC {
-  private promiseCallbackHandlers: { [callid: string]: Callback }
-  private serverAPIs: { [handlerName: string]: Function }
+export class IframeMessagePromise {
+  public serverAPIs: { [handlerName: string]: Function }
 
+  private promiseCallbackHandlers: { [callid: string]: Callback }
   private namespace: string
   private hasInitedClient: boolean;
-  protected namespacePre = '$iframe_ipc_svr'
 
-  constructor(
-    namespace: string,
-    private optioins: { serverFrame?: Window, host?: string } = {},
-  ) {
-    this.namespace = `${this.namespacePre}/${namespace}`;
+  constructor(namespace: string) {
+    this.namespace = `$iframe_ipc_msg/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
 
     this.hasInitedClient = false;
   }
-
-  public defServerAPI<Args extends any[], Result>(
-    api: string,
-    handler: (...args: Args) => Promise<Result>,
-  ): (...args: Args) => Promise<Result> {
-    if (this.serverAPIs[api]) {
-      throw new Error(`Duplicate Definition ServerAPI: ${api}`);
-    }
-
-    this.serverAPIs[api] = handler;
-
-    return (...args: Args) => this.callApi<Args, Result>(api, args);
-  }
-
 
   public initFrameServer(): void {
     window.addEventListener('message', async (event) => {
@@ -113,11 +95,12 @@ export class IframeServerIPC {
     });
   }
 
+  public callApi<Args extends any[], Result>(frame: Window, host: string, api: string, args?: Args): Promise<Result> {
     this.initClient();
 
     const callid = uniqId();
 
-    (this.optioins?.serverFrame || parent)?.postMessage({
+    frame.postMessage({
       [this.namespace]: <CallMessage<Args>>{
         data: {
           api,
@@ -126,7 +109,7 @@ export class IframeServerIPC {
         type: MessageType.CALL,
         callid,
       },
-    }, this.optioins?.host || '*');
+    }, host || '*');
 
     return new Promise((resolve, reject) => {
       this.promiseCallbackHandlers[callid] = {
@@ -158,5 +141,3 @@ export class IframeServerIPC {
     });
   }
 }
-
-// const iframeIpc = new IframeIPC('namespace');
