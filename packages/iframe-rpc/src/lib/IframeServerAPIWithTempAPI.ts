@@ -41,7 +41,7 @@ export class IframeServerAPIWithTempAPI {
     this.iframeMessage.serverAPIs[apikey] = (event, { extdata, args }: ExtArgs[0]) => {
       const callTempApi = this.genCallTempApi(event.source);
       const handlers = extdata.funcids.reduce((map, funcid) => {
-        map[funcid] = (...args: any[]) => callTempApi(funcid, args);
+        map[funcid] = (...args: any[]) => callTempApi(funcid, ...args);
         return map;
       }, {} as { [funcid: string]: Function });
 
