@@ -34,10 +34,10 @@ export class IframeIPC {
   }
 
 
-  public defServerAPIWithTempAPI<Args extends any[], Result>(
-    ...args: Parameters<typeof this.iframeServerAPITemp.defServerAPIWithTempAPI<Args, Result>>
+  public defServerAPIExt<Args extends any[], Result>(
+    ...args: Parameters<typeof this.iframeServerAPITemp.defServerAPIExt<Args, Result>>
   ) {
-    return this.iframeServerAPITemp.defServerAPIWithTempAPI(...args);
+    return this.iframeServerAPITemp.defServerAPIExt(...args);
   }
 
 

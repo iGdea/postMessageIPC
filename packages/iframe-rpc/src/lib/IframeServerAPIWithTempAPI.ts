@@ -8,6 +8,10 @@ type TempAPIData = {
 
 type TempAPI<Args extends any[], Result> = (data: TempAPIData, ...args: Args) => Result;
 
+type ExtData = {
+  funcids: string[],
+};
+
 export class IframeServerAPIWithTempAPI {
 
   constructor(
@@ -15,33 +19,35 @@ export class IframeServerAPIWithTempAPI {
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {}
 
-  public defServerAPIWithTempAPI<Args extends any[], Result>(
+  public defServerAPIExt<Args extends any[], Result>(
     api: string,
     handler: (
-      data: TempAPIData & { handlers: { [funcid: string]: Function } },
+      data: TempAPIData & { handlers: { [funcid: string]: Function }, extdata: ExtData },
       ...args: Args
     ) => Promise<Result> | Result,
-  ): (funcids: string[], ...args: Args) => Promise<Result> {
+  ): (extdata: ExtData, ...args: Args) => Promise<Result> {
+    type ExtArgs = [{ extdata: ExtData, args: Args }];
+
     const apikey = `svr_api_temp/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
     }
 
-    this.iframeMessage.serverAPIs[apikey] = (event, { funcids, args }: { funcids: string[], args: Args }) => {
+    this.iframeMessage.serverAPIs[apikey] = (event, { extdata, args }: ExtArgs[0]) => {
       const callTempApi = this.genCallTempApi(event.source);
-      const handlers = funcids.reduce((map, funcid) => {
+      const handlers = extdata.funcids.reduce((map, funcid) => {
         map[funcid] = (...args: any[]) => callTempApi(funcid, args);
         return map;
       }, {} as { [funcid: string]: Function });
 
-      return handler({ event, handlers, callTempApi }, ...args);
+      return handler({ event, handlers, extdata, callTempApi }, ...args);
     };
 
-    return (funcids: string[], ...args: Args) => this.iframeMessage.callApi<[{ funcids: string[], args: Args }], Result>(
+    return (extdata: ExtData, ...args: Args) => this.iframeMessage.callApi<ExtArgs, Result>(
       this.optioins.serverFrame || parent,
       apikey,
-      [{ funcids, args }],
+      [{ extdata, args }],
       this.optioins.host || '*',
     );
   }
