@@ -1,6 +1,6 @@
 {
   "name": "iframe-ipc",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "iframe-ipc",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

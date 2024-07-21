@@ -7,6 +7,9 @@
   ],
   "scripts": {
     "lint": "eslint .",
+    "pub": "changeset",
+    "pub2": "changeset version && changeset tag && git push --follow-tags",
+    "pub3": "pnpm publish -r --no-git-checks",
     "build": "nx run-many --target=build",
     "watch": "nx run-many --target=watch --parallel=999",
     "bench": "nx run-many --target=bench --output-style=stream",
