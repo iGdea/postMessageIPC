@@ -21,14 +21,14 @@ export class IframeServerAPIWithTempAPI {
       data: TempAPIData & { handlers: { [funcid: string]: Function } },
       ...args: Args
     ) => Promise<Result> | Result,
-  ): (...args: Args) => Promise<Result> {
+  ): (funcids: string[], ...args: Args) => Promise<Result> {
     const apikey = `svr_api_temp/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
     }
 
-    this.iframeMessage.serverAPIs[apikey] = (event, funcids: string[], ...args: Args) => {
+    this.iframeMessage.serverAPIs[apikey] = (event, { funcids, args }: { funcids: string[], args: Args }) => {
       const callTempApi = this.genCallTempApi(event.source);
       const handlers = funcids.reduce((map, funcid) => {
         map[funcid] = (...args: any[]) => callTempApi(funcid, args);
@@ -38,10 +38,10 @@ export class IframeServerAPIWithTempAPI {
       return handler({ event, handlers, callTempApi }, ...args);
     };
 
-    return (...args: Args) => this.iframeMessage.callApi<Args, Result>(
+    return (funcids: string[], ...args: Args) => this.iframeMessage.callApi<[{ funcids: string[], args: Args }], Result>(
       this.optioins.serverFrame || parent,
       apikey,
-      args,
+      [{ funcids, args }],
       this.optioins.host || '*',
     );
   }
