@@ -46,6 +46,9 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 }
 
 
+/**
+ * postMessage 的 promise 消息通道
+ */
 export class IframeMessagePromise {
   public serverAPIs: { [handlerName: string]: (event: MessageEvent, ...args: any[]) => any }
 

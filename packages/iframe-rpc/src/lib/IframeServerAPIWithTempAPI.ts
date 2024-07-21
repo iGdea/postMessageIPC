@@ -13,11 +13,14 @@ type ExtData = {
 };
 
 export class IframeServerAPIWithTempAPI {
+  private tempAPIs: Map<TempAPI<any, any>, string>
 
   constructor(
     private iframeMessage: IframeMessagePromise,
     private optioins: { serverFrame?: Window, host?: string } = {},
-  ) {}
+  ) {
+    this.tempAPIs = new Map();
+  }
 
   public defServerAPIExt<Args extends any[], Result>(
     api: string,
@@ -28,7 +31,7 @@ export class IframeServerAPIWithTempAPI {
   ): (extdata: ExtData, ...args: Args) => Promise<Result> {
     type ExtArgs = [{ extdata: ExtData, args: Args }];
 
-    const apikey = `svr_api_temp/${api}`;
+    const apikey = `svr_api_ext/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
@@ -55,6 +58,9 @@ export class IframeServerAPIWithTempAPI {
   public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>): string {
     this.initFrameServer();
 
+    const oldfuncid = this.tempAPIs.get(handler);
+    if (oldfuncid) return oldfuncid;
+
     const funcid = uniqId();
     const apikey = `tempapi/${funcid}`;
 
@@ -63,12 +69,18 @@ export class IframeServerAPIWithTempAPI {
       return handler({ event, callTempApi }, ...args);
     };
 
+    this.tempAPIs.set(handler, funcid);
+
     return funcid;
   }
 
   public undefTempAPI(funcid: string): void {
     const apikey = `tempapi/${funcid}`;
     delete this.iframeMessage.serverAPIs[apikey];
+
+    for (const [val, key] of this.tempAPIs) {
+      if (key === funcid) this.tempAPIs.delete(val);
+    }
   }
 
   public undefAllTempAPI(): void {
@@ -77,6 +89,8 @@ export class IframeServerAPIWithTempAPI {
         delete this.iframeMessage.serverAPIs[key];
       }
     });
+
+    this.tempAPIs.clear();
   }
 
   private initFrameServer(): void {
