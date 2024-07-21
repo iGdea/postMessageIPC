@@ -1,21 +1,22 @@
-iframe-rpc
+iframe-ipc
 ==========
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][npm-url]
 [![NPM License][license-image]][npm-url]
 
-生成翻译函数
+跨iframe通讯，对齐promise调用体验
+
 
 ## Install
 ```
-npm install iframe-rpc --save
+npm install iframe-ipc --save
 ```
 
 ## Usage
 
 ```typescript
-import { IframeIPC } from 'iframe-rpc';
+import { IframeIPC } from 'iframe-ipc';
 
 const iframeIpc = new IframeIPC('namespace', {
   dosomething(args) {
@@ -23,15 +24,15 @@ const iframeIpc = new IframeIPC('namespace', {
   }
 });
 
-// top ifreame
+// top 外层 ifreame
 iframeIpc.initFrameServer();
 
-// client iframe
+// client 内层 iframe
 iframeIpc.callApi('dosomething', args).then((result) => console.log(result));
 ```
 
 
-[npm-image]: https://img.shields.io/npm/v/iframe-rpc.svg
-[downloads-image]: https://img.shields.io/npm/dm/iframe-rpc.svg
-[npm-url]: https://www.npmjs.org/package/iframe-rpc
-[license-image]: https://img.shields.io/npm/l/iframe-rpc.svg
+[npm-image]: https://img.shields.io/npm/v/iframe-ipc.svg
+[downloads-image]: https://img.shields.io/npm/dm/iframe-ipc.svg
+[npm-url]: https://www.npmjs.org/package/iframe-ipc
+[license-image]: https://img.shields.io/npm/l/iframe-ipc.svg

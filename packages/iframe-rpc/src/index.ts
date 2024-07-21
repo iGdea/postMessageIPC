@@ -18,7 +18,7 @@ type Message<T> = {
 };
 
 type CallData<Args> = {
-  call: string,
+  api: string,
   args: Args,
 };
 
@@ -47,18 +47,26 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 
 
 export class IframeIPC {
-  private callbackHandlers: {
-    [callid: string]: Callback
-  }
+  private callbackHandlers: { [callid: string]: Callback }
+  private serverAPIs: { [handlerName: string]: (args: any) => Promise<any> }
 
   constructor(
     private namespace: string,
-    private serverHandlers: { [handlerName: string]: (args: any) => Promise<any> } = {},
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {
     this.callbackHandlers = {};
+    this.serverAPIs = {};
 
     this.initClient();
+  }
+
+  public defServerAPI<Args, Result>(
+    api: string,
+    handler: (args: Args) => Promise<Result>,
+  ): (args: Args) => Promise<Result> {
+    this.serverAPIs[api] = handler;
+
+    return (args: Args) => this.callApi<Args, Result>(api, args);
   }
 
   public initFrameServer(): void {
@@ -66,7 +74,7 @@ export class IframeIPC {
       const data = event.data?.[this.namespace] as CallMessage<any> | ReturnMessage<any, any>;
 
       if (isCallMessage(data)) {
-        const handler = this.serverHandlers[data.data.call];
+        const handler = this.serverAPIs[data.data.api];
         if (handler) {
           const { callid } = data;
           const returnMessage = <Data, Error>(data: ReturnData<Data, Error>): void => {
@@ -93,13 +101,13 @@ export class IframeIPC {
     });
   }
 
-  public callApi<A, R>(call: string, args?: A): Promise<R> {
+  private callApi<Args, Result>(api: string, args?: Args): Promise<Result> {
     const callid = getCallId();
 
     (this.optioins?.serverFrame || parent)?.postMessage({
-      [this.namespace]: <CallMessage<A>>{
+      [this.namespace]: <CallMessage<Args>>{
         data: {
-          call,
+          api,
           args,
         },
         type: MessageType.CALL,
@@ -115,7 +123,7 @@ export class IframeIPC {
     });
   }
 
-  private initClient() {
+  private initClient(): void {
     window.addEventListener('message', (event) => {
       const data = event.data?.[this.namespace] as CallMessage<any> | ReturnMessage<any, any>;
 
@@ -134,3 +142,5 @@ export class IframeIPC {
     });
   }
 }
+
+// const iframeIpc = new IframeIPC('namespace');
