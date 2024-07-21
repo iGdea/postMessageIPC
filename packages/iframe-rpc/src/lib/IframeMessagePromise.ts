@@ -47,11 +47,12 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 
 
 export class IframeMessagePromise {
-  public serverAPIs: { [handlerName: string]: Function }
+  public serverAPIs: { [handlerName: string]: (event: MessageEvent, ...args: any[]) => any }
 
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private namespace: string
   private hasInitedClient: boolean;
+  private hasInitedFrameServer: boolean;
 
   constructor(namespace: string) {
     this.namespace = `$iframe_ipc_msg/${namespace}`;
@@ -59,9 +60,16 @@ export class IframeMessagePromise {
     this.serverAPIs = {};
 
     this.hasInitedClient = false;
+    this.hasInitedFrameServer = false;
   }
 
+  /**
+   * 绑定外层frame的message事件
+   */
   public initFrameServer(): void {
+    if (this.hasInitedFrameServer) return;
+    this.hasInitedFrameServer = true;
+
     window.addEventListener('message', async (event) => {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
@@ -85,7 +93,7 @@ export class IframeMessagePromise {
           }
 
           try {
-            const result = await handler(...data.data.args);
+            const result = await handler(event, ...data.data.args);
             returnMessage({ iserr: false, data: result })
           } catch (error) {
             returnMessage({ iserr: true, error })
@@ -95,12 +103,16 @@ export class IframeMessagePromise {
     });
   }
 
-  public callApi<Args extends any[], Result>(frame: Window, host: string, api: string, args?: Args): Promise<Result> {
+  /**
+   * 通过postMessage调用外层frame中的方法
+   */
+  public callApi<Args extends any[], Result>(frame: MessageEventSource, api: string, args: Args): Promise<Result>
+  public callApi<Args extends any[], Result>(frame: Window, api: string, args: Args, host: string): Promise<Result>
+  public callApi<Args extends any[], Result>(frame: MessageEventSource | Window, api: string, args: Args, host?: string): Promise<Result> {
     this.initClient();
 
     const callid = uniqId();
-
-    frame.postMessage({
+    const postData = {
       [this.namespace]: <CallMessage<Args>>{
         data: {
           api,
@@ -109,7 +121,13 @@ export class IframeMessagePromise {
         type: MessageType.CALL,
         callid,
       },
-    }, host || '*');
+    };
+
+    if (typeof host === 'string') {
+      (frame as Window).postMessage(postData, host);
+    } else {
+      frame.postMessage(postData);
+    }
 
     return new Promise((resolve, reject) => {
       this.promiseCallbackHandlers[callid] = {
@@ -119,6 +137,9 @@ export class IframeMessagePromise {
     });
   }
 
+  /**
+   * 绑定内层frame的message事件
+   */
   private initClient(): void {
     if (this.hasInitedClient) return;
     this.hasInitedClient = true;
