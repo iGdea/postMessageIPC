@@ -52,7 +52,7 @@ export class IframeServerAPIWithTempAPI {
     );
   }
 
-  public genTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>): string {
+  public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>): string {
     this.initFrameServer();
 
     const funcid = uniqId();
@@ -66,9 +66,17 @@ export class IframeServerAPIWithTempAPI {
     return funcid;
   }
 
-  public removeTempAPI(funcid: string): void {
+  public undefTempAPI(funcid: string): void {
     const apikey = `tempapi/${funcid}`;
     delete this.iframeMessage.serverAPIs[apikey];
+  }
+
+  public undefAllTempAPI(): void {
+    Object.keys(this.iframeMessage.serverAPIs).forEach(key => {
+      if (key.startsWith('tempapi/')) {
+        delete this.iframeMessage.serverAPIs[key];
+      }
+    });
   }
 
   private initFrameServer(): void {

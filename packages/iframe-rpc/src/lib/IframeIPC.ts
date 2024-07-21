@@ -29,23 +29,45 @@ export class IframeIPC {
     return this.iframeServerAPI.defServerAPI(...args);
   }
 
+  /**
+   * 初始化外层Frame的事件监听
+   */
   public initFrameServer(): void {
     return this.iframeMessage.initFrameServer();
   }
 
 
+  /**
+   * 【cgi模式】注册外层Frame接口（SDK形式的固定函数），并返回给内层Frame使用的函数
+   *
+   * 不同于 `defServerAPI`，内层Frame调用时可以传入funcids（可通过defTempAPI接口生成），实现回调函数的注册
+   */
   public defServerAPIExt<Args extends any[], Result>(
     ...args: Parameters<typeof this.iframeServerAPITemp.defServerAPIExt<Args, Result>>
   ) {
     return this.iframeServerAPITemp.defServerAPIExt(...args);
   }
 
-
-  public genTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.genTempAPI>) {
-    return this.iframeServerAPITemp.genTempAPI(...args);
+  /**
+   * 生成 funcid，实现临时函数的注册（一般用于各种回调）
+   *
+   * 注意：使用完成后，需要通过 undefTempAPI，销毁临时函数。否则容易造成内存泄露
+   */
+  public defTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.defTempAPI>) {
+    return this.iframeServerAPITemp.defTempAPI(...args);
   }
 
-  public removeTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.removeTempAPI>): void {
-    return this.iframeServerAPITemp.removeTempAPI(...args);
+  /**
+   * 删除临时函数
+   */
+  public undefTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.undefTempAPI>): void {
+    return this.iframeServerAPITemp.undefTempAPI(...args);
+  }
+
+  /**
+   * 删除所有的临时函数
+   */
+  public undefAllTempAPI(...args: Parameters<typeof this.iframeServerAPITemp.undefAllTempAPI>): void {
+    return this.iframeServerAPITemp.undefAllTempAPI(...args);
   }
 }
