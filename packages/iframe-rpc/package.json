@@ -1,0 +1,37 @@
+{
+  "name": "iframe-ipc",
+  "version": "0.0.0",
+  "description": "iframe-ipc",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepack": "npx rimraf dist && npm run build --if-present",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "pretest": "npm run build",
+    "test": "jest dist/test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Bacra/iframe-ipc.git",
+    "directory": "packages/iframe-ipc"
+  },
+  "keywords": [
+    "iframe",
+    "ipc",
+    "postMessage",
+    "promise"
+  ],
+  "author": "Bacra Woo <bacra.woo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bacra/iframe-ipc/issues"
+  },
+  "homepage": "https://github.com/Bacra/iframe-ipc/tree/master/packages/iframe-ipc",
+  "dependencies": {},
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.4.5"
+  }
+}
