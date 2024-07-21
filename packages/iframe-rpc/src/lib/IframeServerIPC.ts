@@ -48,7 +48,7 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 
 export class IframeServerIPC {
   private promiseCallbackHandlers: { [callid: string]: Callback }
-  private serverAPIs: { [handlerName: string]: (...args: any[]) => Promise<any> }
+  private serverAPIs: { [handlerName: string]: Function }
 
   constructor(
     private namespace: string,
@@ -75,7 +75,7 @@ export class IframeServerIPC {
 
 
   public initFrameServer(): void {
-    window.addEventListener('message', (event) => {
+    window.addEventListener('message', async (event) => {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
@@ -97,10 +97,12 @@ export class IframeServerIPC {
             }, event.origin as any);
           }
 
-          handler(...data.data.args).then(
-            data => returnMessage({ iserr: false, data }),
-            error => returnMessage({ iserr: true, error }),
-          );
+          try {
+            const result = await handler(...data.data.args);
+            returnMessage({ iserr: false, data: result })
+          } catch (error) {
+            returnMessage({ iserr: true, error })
+          }
         }
       }
     });
