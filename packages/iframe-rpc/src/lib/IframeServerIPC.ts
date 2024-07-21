@@ -49,11 +49,14 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 export class IframeServerIPC {
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private serverAPIs: { [handlerName: string]: Function }
+  private namespace: string
+  protected namespacePre = 'iframe_rpc_svr'
 
   constructor(
-    private namespace: string,
+    namespace: string,
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {
+    this.namespace = `${this.namespacePre}/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
 
