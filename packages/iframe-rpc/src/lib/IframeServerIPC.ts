@@ -1,4 +1,4 @@
-import { getCallId } from './lib/getCallId';
+import { getCallId } from './getCallId';
 
 
 type Callback = {
@@ -46,7 +46,7 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 }
 
 
-export class IframeIPC {
+export class IframeServerIPC {
   private promiseCallbackHandlers: { [callid: string]: Callback }
   private serverAPIs: { [handlerName: string]: (...args: any[]) => Promise<any> }
 
@@ -76,7 +76,7 @@ export class IframeIPC {
 
   public initFrameServer(): void {
     window.addEventListener('message', (event) => {
-      const data = event.data?.[this.namespace] as CallMessage<any> | ReturnMessage<any, any>;
+      const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
         const handler = this.serverAPIs[data.data.api];
@@ -130,7 +130,7 @@ export class IframeIPC {
 
   private initClient(): void {
     window.addEventListener('message', (event) => {
-      const data = event.data?.[this.namespace] as CallMessage<any> | ReturnMessage<any, any>;
+      const data = event.data?.[this.namespace] as ReturnMessage<any, any>;
 
       if (isReturnMessage(data)) {
         const handler = this.promiseCallbackHandlers[data.callid];
