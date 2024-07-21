@@ -17,12 +17,12 @@ type Message<T> = {
   callid: string,
 };
 
-type CallData<Args> = {
+type CallData<Args extends any[]> = {
   api: string,
   args: Args,
 };
 
-type CallMessage<Args> = Message<CallData<Args>>;
+type CallMessage<Args extends any[]> = Message<CallData<Args>>;
 
 type ReturnData<Data, Error> = {
   iserr: boolean,
@@ -48,7 +48,7 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
 
 export class IframeIPC {
   private callbackHandlers: { [callid: string]: Callback }
-  private serverAPIs: { [handlerName: string]: (args: any) => Promise<any> }
+  private serverAPIs: { [handlerName: string]: (...args: any[]) => Promise<any> }
 
   constructor(
     private namespace: string,
@@ -60,13 +60,13 @@ export class IframeIPC {
     this.initClient();
   }
 
-  public defServerAPI<Args, Result>(
+  public defServerAPI<Args extends any[], Result>(
     api: string,
-    handler: (args: Args) => Promise<Result>,
-  ): (args: Args) => Promise<Result> {
+    handler: (...args: Args) => Promise<Result>,
+  ): (...args: Args) => Promise<Result> {
     this.serverAPIs[api] = handler;
 
-    return (args: Args) => this.callApi<Args, Result>(api, args);
+    return (...args: Args) => this.callApi<Args, Result>(api, args);
   }
 
   public initFrameServer(): void {
@@ -92,7 +92,7 @@ export class IframeIPC {
             }, event.origin as any);
           }
 
-          handler(data.data.args).then(
+          handler(...data.data.args).then(
             data => returnMessage({ iserr: false, data }),
             error => returnMessage({ iserr: true, error }),
           );
@@ -101,7 +101,7 @@ export class IframeIPC {
     });
   }
 
-  private callApi<Args, Result>(api: string, args?: Args): Promise<Result> {
+  private callApi<Args extends any[], Result>(api: string, args?: Args): Promise<Result> {
     const callid = getCallId();
 
     (this.optioins?.serverFrame || parent)?.postMessage({
