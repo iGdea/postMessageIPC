@@ -12,6 +12,13 @@ type ExtData = {
   funcids: string[],
 };
 
+
+
+/**
+ * 创建和管理临时API，用于事件触发等函数定义
+ *
+ * 注意：使用完后，利用 undefTempAPI 回收内存
+ */
 export class IframeServerAPIWithTempAPI {
   private tempAPIs: Map<TempAPI<any, any>, string>
 
@@ -20,6 +27,8 @@ export class IframeServerAPIWithTempAPI {
     private optioins: { serverFrame?: Window, host?: string } = {},
   ) {
     this.tempAPIs = new Map();
+
+    // iframeMessage 清理时，需要清理掉 tempAPIs 缓存数据
     this.iframeMessage.ondestroy(() => this.tempAPIs.clear());
   }
 
