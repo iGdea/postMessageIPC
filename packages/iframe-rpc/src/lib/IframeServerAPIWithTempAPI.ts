@@ -30,15 +30,13 @@ export class IframeServerAPIWithTempAPI {
       ...args: Args
     ) => Promise<Result> | Result,
   ): (extdata: ExtData, ...args: Args) => Promise<Result> {
-    type ExtArgs = [{ extdata: ExtData, args: Args }];
-
     const apikey = `svr_api_ext/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
     }
 
-    this.iframeMessage.serverAPIs[apikey] = (event, { extdata, args }: ExtArgs[0]) => {
+    this.iframeMessage.serverAPIs[apikey] = (event, extdata: ExtData, ...args: Args) => {
       const callTempApi = this.genCallTempApi(event.source);
       const handlers = extdata.funcids.reduce((map, funcid) => {
         map[funcid] = (...args: any[]) => callTempApi(funcid, ...args);
@@ -48,10 +46,10 @@ export class IframeServerAPIWithTempAPI {
       return handler({ event, handlers, extdata, callTempApi }, ...args);
     };
 
-    return (extdata: ExtData, ...args: Args) => this.iframeMessage.callApi<ExtArgs, Result>(
+    return (extdata: ExtData, ...args: Args) => this.iframeMessage.callApi<[ExtData, ...Args], Result>(
       this.optioins.serverFrame || parent,
       apikey,
-      [{ extdata, args }],
+      [extdata, ...args],
       this.optioins.host || '*',
     );
   }
