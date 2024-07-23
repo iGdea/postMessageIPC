@@ -12,11 +12,21 @@ enum MessageType {
   RETURN = 'return',
 }
 
-type Message<T> = {
+type NormalMessage<T> = {
+  encode: false,
   message: T,
   type: MessageType,
   callid: string,
 };
+
+type EncodeMessage = {
+  encode: true,
+  buffer: any,
+  type: MessageType,
+  callid: string,
+};
+
+type Message<T> = NormalMessage<T> | EncodeMessage;
 
 type CallData<Args extends any[]> = {
   api: string,
@@ -46,6 +56,37 @@ function isReturnMessage(data: any): data is ReturnMessage<any, any> {
     && data.type === MessageType.RETURN;
 }
 
+function isEncodeMessage(data: any): data is EncodeMessage {
+  return data
+    && data.callid
+    && data.encode;
+}
+
+async function decodeMessage<T>(data: Message<T>, transform?: TransformHandler<any, T>): Promise<T> {
+  if (isEncodeMessage(data)) {
+    if (!transform) throw new Error('Miss transform For EncodeMessage');
+    return transform('decode', data.buffer);
+  }
+
+  return data.message;
+}
+
+async function encodeMessage<T>(data: Message<T>, transform: TransformHandler<T, any>): Promise<EncodeMessage> {
+  if (isEncodeMessage(data)) return data;
+
+  return {
+    encode: true,
+    buffer: await transform('encode', data.message),
+    type: data.type,
+    callid: data.callid,
+  };
+}
+
+export type TransformHandler<Args, Result> = {
+  (type: 'encode', args: Args): Result | Promise<Result>
+  (type: 'decode', args: Result): Args | Promise<Args>
+};
+
 
 /**
  * postMessage 的 promise 消息通道
@@ -59,7 +100,10 @@ export class IframeMessagePromise {
   private hasInitedClient: undefined | ((event: MessageEvent) => any)
   private hasInitedFrameServer: undefined | ((event: MessageEvent) => any)
 
-  constructor(namespace: string) {
+  constructor(
+    namespace: string,
+    private options: { transform?: TransformHandler<any, any> } = {},
+  ) {
     this.namespace = `$iframe_ipc_msg/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
@@ -77,29 +121,39 @@ export class IframeMessagePromise {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
-        const { message, callid } = data;
+        const { callid } = data;
+        const message = await decodeMessage(data, this.options.transform);
         const handler = this.serverAPIs[message.api];
+
         if (handler) {
-          const returnMessage = <Data, Error>(message: ReturnData<Data, Error>): void => {
+          const returnMessage = async <Data, Error>(message: ReturnData<Data, Error>, canTransfrom = true): Promise<void> => {
             if (!event.source) {
               console.error('miss event.source');
               return;
             }
 
+            const originData = <ReturnMessage<Data, Error>>{
+              message,
+              type: MessageType.RETURN,
+              callid,
+            };
+
             event.source.postMessage({
-              [this.namespace]: <ReturnMessage<Data, Error>>{
-                message,
-                type: MessageType.RETURN,
-                callid,
-              },
+              [this.namespace]: canTransfrom && this.options.transform
+                ? await encodeMessage(originData, this.options.transform)
+                : originData,
             }, event.origin as any);
           }
 
           try {
             const result = await handler(event, ...message.args);
-            returnMessage({ iserr: false, data: result })
+            await returnMessage({ iserr: false, data: result });
           } catch (error) {
-            returnMessage({ iserr: true, error })
+            try {
+              await returnMessage({ iserr: true, error });
+            } catch (error) {
+              await returnMessage({ iserr: true, error }, false);
+            }
           }
         }
       }
@@ -112,21 +166,26 @@ export class IframeMessagePromise {
   /**
    * 通过postMessage调用外层frame中的方法
    */
-  public callApi<Args extends any[], Result>(frame: MessageEventSource, api: string, args: Args): Promise<Result>
-  public callApi<Args extends any[], Result>(frame: Window, api: string, args: Args, host: string): Promise<Result>
-  public callApi<Args extends any[], Result>(frame: MessageEventSource | Window, api: string, args: Args, host?: string): Promise<Result> {
+  public async callApi<Args extends any[], Result>(frame: MessageEventSource, api: string, args: Args): Promise<Result>
+  public async callApi<Args extends any[], Result>(frame: Window, api: string, args: Args, host: string): Promise<Result>
+  public async callApi<Args extends any[], Result>(frame: MessageEventSource | Window, api: string, args: Args, host?: string): Promise<Result> {
     this.initClient();
 
     const callid = uniqId();
-    const postData = {
-      [this.namespace]: <CallMessage<Args>>{
-        message: {
-          api,
-          args,
-        },
-        type: MessageType.CALL,
-        callid,
+    const originData: CallMessage<Args> = {
+      encode: false,
+      message: {
+        api,
+        args,
       },
+      type: MessageType.CALL,
+      callid,
+    };
+
+    const postData = {
+      [this.namespace]: this.options.transform
+        ? await encodeMessage(originData, this.options.transform)
+        : originData,
     };
 
     if (typeof host === 'string') {
@@ -149,11 +208,12 @@ export class IframeMessagePromise {
   private initClient(): void {
     if (this.hasInitedClient) return;
 
-    const func = (event: MessageEvent) => {
+    const func = async(event: MessageEvent) => {
       const data = event.data?.[this.namespace] as ReturnMessage<any, any>;
 
       if (isReturnMessage(data)) {
-        const { callid, message } = data;
+        const { callid } = data;
+        const message = await decodeMessage(data, this.options.transform);
         const handler = this.promiseCallbackHandlers[callid];
         if (handler) {
           delete this.promiseCallbackHandlers[callid];

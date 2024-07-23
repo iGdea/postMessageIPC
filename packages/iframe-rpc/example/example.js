@@ -1,31 +1,13 @@
 const { IframeIPC } = require('../');
+const { isTop, appendMessage } = require('./example/appendMessage');
 
-const isTop = !top || top === window;
-const iframeIpc = new IframeIPC('namespace');
-const messageDiv = document.getElementById('js_htmlMessage');
-const messageDivAll = document.getElementById('js_htmlMessageAll');
-
-function appendMessage(str) {
-  const el = document.createElement('div');
-  el.innerHTML = new Date() + ' ' + str;
-  messageDiv.appendChild(el);
-
-  if (isTop) {
-    appendMessageAll(str);
-  } else {
-    top.appendMessageAll(str);
+const iframeIpc = new IframeIPC('namespace', {
+  transform: async (type, data) => {
+    const result = type === 'encode' ? { myencode: data } : data.myencode;
+    appendMessage(`  >>> ${type} result: ${JSON.stringify(result)}`);
+    return result;
   }
-}
-
-function appendMessageAll(str) {
-  if (isTop) {
-    const el = document.createElement('div');
-    el.innerHTML = new Date() + ' ' + str;
-    messageDivAll.appendChild(el);
-  }
-}
-
-window.appendMessageAll = appendMessageAll;
+});
 
 const clickButton1 = iframeIpc.defServerAPI('clickButton1', function({ msg, index }) {
   appendMessage(`2. receive message: ${msg}`);
