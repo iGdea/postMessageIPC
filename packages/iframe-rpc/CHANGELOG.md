@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.1.0
+
+### Minor Changes
+
+- 支持 transform 回调函数,用于转换传递的参数
+
 ## 2.0.1
 
 ### Patch Changes
