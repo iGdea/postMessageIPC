@@ -1,6 +1,8 @@
-import { IframeMessagePromise, TransformHandler } from './IframeMessagePromise';
+import { IframeMessagePromise } from './IframeMessagePromise';
 import { IframeServerAPI } from './IframeServerAPI';
 import { IframeServerAPIWithTempAPI } from './IframeServerAPIWithTempAPI';
+
+import type { TransformHandler } from './Message';
 
 export class IframeIPC {
   iframeMessage: IframeMessagePromise

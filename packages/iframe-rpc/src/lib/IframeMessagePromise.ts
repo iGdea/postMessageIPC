@@ -1,90 +1,22 @@
 import { Emit } from 'emit-ts';
-import { uniqId } from './uniqId';
 
+import { uniqId } from './uniqId';
+import {
+  MessageType,
+  isCallMessage,
+  isReturnMessage,
+  decodeMessage,
+  encodeMessage,
+
+  type CallMessage,
+  type ReturnData,
+  type ReturnMessage,
+  type TransformHandler,
+} from './Message';
 
 type Callback = {
   resolve: (data: any) => void,
   reject: (data: any) => void,
-};
-
-enum MessageType {
-  CALL = 'call',
-  RETURN = 'return',
-}
-
-type NormalMessage<T> = {
-  encode: false,
-  message: T,
-  type: MessageType,
-  callid: string,
-};
-
-type EncodeMessage = {
-  encode: true,
-  buffer: any,
-  type: MessageType,
-  callid: string,
-};
-
-type Message<T> = NormalMessage<T> | EncodeMessage;
-
-type CallData<Args extends any[]> = {
-  api: string,
-  args: Args,
-};
-
-type CallMessage<Args extends any[]> = Message<CallData<Args>>;
-
-type ReturnData<Data, Error> = {
-  iserr: boolean,
-  data?: Data
-  error?: Error,
-};
-
-type ReturnMessage<Data, Error> = Message<ReturnData<Data, Error>>;
-
-
-function isCallMessage(data: any): data is CallMessage<any> {
-  return data
-    && data.callid
-    && data.type === MessageType.CALL;
-}
-
-function isReturnMessage(data: any): data is ReturnMessage<any, any> {
-  return data
-    && data.callid
-    && data.type === MessageType.RETURN;
-}
-
-function isEncodeMessage(data: any): data is EncodeMessage {
-  return data
-    && data.callid
-    && data.encode;
-}
-
-async function decodeMessage<T>(data: Message<T>, transform?: TransformHandler<any, T>): Promise<T> {
-  if (isEncodeMessage(data)) {
-    if (!transform) throw new Error('Miss transform For EncodeMessage');
-    return transform('decode', data.buffer);
-  }
-
-  return data.message;
-}
-
-async function encodeMessage<T>(data: Message<T>, transform: TransformHandler<T, any>): Promise<EncodeMessage> {
-  if (isEncodeMessage(data)) return data;
-
-  return {
-    encode: true,
-    buffer: await transform('encode', data.message),
-    type: data.type,
-    callid: data.callid,
-  };
-}
-
-export type TransformHandler<Args, Result> = {
-  (type: 'encode', args: Args): Result | Promise<Result>
-  (type: 'decode', args: Result): Args | Promise<Args>
 };
 
 
