@@ -13,7 +13,7 @@ enum MessageType {
 }
 
 type Message<T> = {
-  data: T,
+  message: T,
   type: MessageType,
   callid: string,
 };
@@ -77,10 +77,10 @@ export class IframeMessagePromise {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
-        const handler = this.serverAPIs[data.data.api];
+        const { message, callid } = data;
+        const handler = this.serverAPIs[message.api];
         if (handler) {
-          const { callid } = data;
-          const returnMessage = <Data, Error>(data: ReturnData<Data, Error>): void => {
+          const returnMessage = <Data, Error>(message: ReturnData<Data, Error>): void => {
             if (!event.source) {
               console.error('miss event.source');
               return;
@@ -88,7 +88,7 @@ export class IframeMessagePromise {
 
             event.source.postMessage({
               [this.namespace]: <ReturnMessage<Data, Error>>{
-                data,
+                message,
                 type: MessageType.RETURN,
                 callid,
               },
@@ -96,7 +96,7 @@ export class IframeMessagePromise {
           }
 
           try {
-            const result = await handler(event, ...data.data.args);
+            const result = await handler(event, ...message.args);
             returnMessage({ iserr: false, data: result })
           } catch (error) {
             returnMessage({ iserr: true, error })
@@ -120,7 +120,7 @@ export class IframeMessagePromise {
     const callid = uniqId();
     const postData = {
       [this.namespace]: <CallMessage<Args>>{
-        data: {
+        message: {
           api,
           args,
         },
@@ -153,14 +153,15 @@ export class IframeMessagePromise {
       const data = event.data?.[this.namespace] as ReturnMessage<any, any>;
 
       if (isReturnMessage(data)) {
-        const handler = this.promiseCallbackHandlers[data.callid];
+        const { callid, message } = data;
+        const handler = this.promiseCallbackHandlers[callid];
         if (handler) {
-          delete this.promiseCallbackHandlers[data.callid];
+          delete this.promiseCallbackHandlers[callid];
 
-          if (data.data.iserr) {
-            handler.reject(data.data.error);
+          if (message.iserr) {
+            handler.reject(message.error);
           } else {
-            handler.resolve(data.data.data);
+            handler.resolve(message.data);
           }
         }
       }
