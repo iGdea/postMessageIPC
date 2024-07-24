@@ -1,8 +1,9 @@
-import { IframeMessagePromise } from './IframeMessagePromise';
-import { IframeServerAPI } from './IframeServerAPI';
+import { IframeMessagePromise, type MessagePromiseOptions } from './IframeMessagePromise';
+import { IframeServerAPI, type ServerAPIOptions } from './IframeServerAPI';
 import { IframeServerAPIWithTempAPI } from './IframeServerAPIWithTempAPI';
 
-import type { TransformHandler } from './Message';
+export type IPCOptions = MessagePromiseOptions & ServerAPIOptions;
+
 
 export class IframeIPC {
   iframeMessage: IframeMessagePromise
@@ -11,7 +12,7 @@ export class IframeIPC {
 
   constructor(
     namespace: string,
-    optioins: { serverFrame?: Window, host?: string, transform?: TransformHandler<any, any> } = {},
+    optioins: IPCOptions = {},
   ) {
     this.iframeMessage = new IframeMessagePromise(namespace, optioins);
 

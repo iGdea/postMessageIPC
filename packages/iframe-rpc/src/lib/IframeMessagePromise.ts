@@ -19,6 +19,10 @@ type Callback = {
   reject: (data: any) => void,
 };
 
+export type MessagePromiseOptions = {
+  transform?: TransformHandler<any, any>,
+};
+
 
 /**
  * postMessage 的 promise 消息通道
@@ -34,7 +38,7 @@ export class IframeMessagePromise {
 
   constructor(
     namespace: string,
-    private options: { transform?: TransformHandler<any, any> } = {},
+    private options: MessagePromiseOptions = {},
   ) {
     this.namespace = `$iframe_ipc_msg/${namespace}`;
     this.promiseCallbackHandlers = {};

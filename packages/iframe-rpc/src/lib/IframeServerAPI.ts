@@ -1,10 +1,14 @@
 import type { IframeMessagePromise } from './IframeMessagePromise';
 
+export type ServerAPIOptions = {
+  serverFrame?: Window,
+  host?: string,
+};
 
 export class IframeServerAPI {
   constructor(
     private iframeMessage: IframeMessagePromise,
-    private optioins: { serverFrame?: Window, host?: string } = {},
+    private optioins: ServerAPIOptions = {},
   ) {}
 
   public defServerAPI<Args extends any[], Result>(

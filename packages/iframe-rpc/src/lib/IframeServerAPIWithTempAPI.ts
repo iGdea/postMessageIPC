@@ -1,5 +1,6 @@
 import { uniqId } from './uniqId';
 import type { IframeMessagePromise } from './IframeMessagePromise';
+import type { ServerAPIOptions } from './IframeServerAPI';
 
 type TempAPIData = {
   event: MessageEvent,
@@ -24,7 +25,7 @@ export class IframeServerAPIWithTempAPI {
 
   constructor(
     private iframeMessage: IframeMessagePromise,
-    private optioins: { serverFrame?: Window, host?: string } = {},
+    private optioins: ServerAPIOptions = {},
   ) {
     this.tempAPIs = new Map();
 
