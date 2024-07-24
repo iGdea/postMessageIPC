@@ -1,70 +1,25 @@
 import { IframeIPC } from 'iframe-ipc';
-import { isTop, appendMessage } from './appendMessage';
+import { IframeIPCs } from 'iframe-ipcs';
+import { isTop } from './appendMessage';
+import { newIframeIPC } from './newIframeIPC';
+import { appendMessage } from './appendMessage';
 
-const iframeIpc = new IframeIPC('namespace', {
-  transform: async (type, data) => {
-    const result = type === 'encode' ? { myencode: data } : data.myencode;
-    appendMessage(`  >>> ${type} result: ${JSON.stringify(result)}`);
-    return result;
-  }
+
+const iframeIpc = newIframeIPC('IframeIPC', IframeIPC);
+const iframeIpcs = newIframeIPC('IframeIPCs', IframeIPCs);
+
+
+window.addEventListener('message', (event) => {
+  appendMessage(` >>> onmessage, istop: ${isTop}, msg: ${JSON.stringify(event.data)}`);
 });
-
-const clickButton1 = iframeIpc.defServerAPI('clickButton1', function({ msg, index }) {
-  appendMessage(`2. receive message: ${msg}`);
-  return `return msg: ${msg}`;
-});
-
-const clickButton2 = iframeIpc.defServerAPIExt('clickButton2', async function({ handlers }, { msg, buttonClickFuncid, index }) {
-  appendMessage(`2. receive message: ${msg}`);
-
-  const tempApiRet = await handlers[buttonClickFuncid]({ msg: 'temmApi run args', index });
-  appendMessage(`5. run tempApi ret: ${tempApiRet}`);
-
-  return `return msg: ${msg} apiRet: ${tempApiRet}`;
-});
-
-
 
 
 if (isTop) {
-  iframeIpc.initFrameServer();
+  iframeIpc.iframeIpc.initFrameServer();
+  iframeIpcs.iframeIpc.initFrameServer();
 } else {
-  let clickIndex = 0;
-  window.clickButton1 = async function() {
-    const index = clickIndex++;
-
-    appendMessage(` ======= Stage ${index} ======= `);
-    const msg = 'clickButton1 / ' + Math.random();
-    appendMessage(`1. ${msg}`);
-    const ret = await clickButton1({
-      msg,
-      index,
-    });
-    appendMessage(`3. click ret: ${ret}`);
-    appendMessage(` ======= Stage ${index} ======= `);
-  };
-
-  window.clickButton2 = async function() {
-    const index = clickIndex++;
-
-    appendMessage(` ======= Stage ${index} ======= `);
-    const funcid = iframeIpc.defTempAPI(function(info, { msg }) {
-      appendMessage(`3. receive tempApi message: ${msg}`);
-
-      iframeIpc.undefTempAPI(funcid);
-      appendMessage(`4. undefTempAPI succ, funcid: ${funcid}`);
-
-      return `return tempApi msg: ${msg}`;
-    });
-
-    const msg = 'clickButton2 / ' + Math.random();
-    appendMessage(`1. ${msg}`);
-    const ret = await clickButton2({ funcids: [funcid] }, {
-      msg: msg,
-      buttonClickFuncid: funcid,
-      index,
-    });
-    appendMessage(`6. ${ret}`);
-    appendMessage(` ======= Stage ${index} ======= `);
-  };
+  window.clickButton1 = iframeIpc.clickButton1;
+  window.clickButton2 = iframeIpc.clickButton2;
+  window.clickButton3 = iframeIpcs.clickButton1;
+  window.clickButton4 = iframeIpcs.clickButton2;
 }

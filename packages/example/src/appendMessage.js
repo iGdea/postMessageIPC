@@ -7,6 +7,8 @@ export function appendMessage(str) {
   const el = document.createElement('div');
 
   el.innerText = str;
+  el.style.wordBreak = 'break-all';
+
   if (str.trim().startsWith('>>>')) {
     el.style.fontSize = '12px';
   }

@@ -1,0 +1,37 @@
+{
+  "name": "iframe-ipcs",
+  "version": "0.0.0",
+  "description": "iframe-ipcs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepack": "npx rimraf dist && npm run build --if-present",
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Bacra/iframe-ipcs.git",
+    "directory": "packages/iframe-ipcs"
+  },
+  "keywords": [
+    "iframe",
+    "ipc",
+    "postMessage",
+    "promise"
+  ],
+  "author": "Bacra Woo <bacra.woo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bacra/iframe-ipc/issues"
+  },
+  "homepage": "https://github.com/Bacra/iframe-ipc/tree/master/packages/iframe-ipcs",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "iframe-ipc": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "typescript": "^5.4.5"
+  }
+}

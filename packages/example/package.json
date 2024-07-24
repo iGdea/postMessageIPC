@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/Bacra/iframe-ipc/tree/master/packages/example",
   "dependencies": {
-    "iframe-ipc": "workspace:^"
+    "iframe-ipc": "workspace:^",
+    "iframe-ipcs": "workspace:^"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^26.0.1",
