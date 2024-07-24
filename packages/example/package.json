@@ -1,0 +1,37 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "description": "example",
+  "main": "dist/example.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Bacra/iframe-ipc.git",
+    "directory": "packages/example"
+  },
+  "keywords": [
+    "iframe",
+    "ipc",
+    "postMessage",
+    "promise"
+  ],
+  "author": "Bacra Woo <bacra.woo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bacra/iframe-ipc/issues"
+  },
+  "homepage": "https://github.com/Bacra/iframe-ipc/tree/master/packages/example",
+  "dependencies": {
+    "iframe-ipc": "workspace:^"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "rollup": "^4.19.0"
+  }
+}

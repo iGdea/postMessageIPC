@@ -4,13 +4,10 @@
   "description": "iframe-ipc",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
   "scripts": {
     "prepack": "npx rimraf dist && npm run build --if-present",
-    "build": "tsc && rollup -c",
-    "watch": "tsc --watch & rollup -c -w",
-    "pretest": "npm run build",
-    "test": "jest dist/test/*.test.js"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -33,9 +30,6 @@
     "emit-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "rollup": "^4.19.0",
     "typescript": "^5.4.5"
   }
 }

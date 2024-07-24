@@ -1,5 +1,5 @@
-const { IframeIPC } = require('../');
-const { isTop, appendMessage } = require('./example/appendMessage');
+import { IframeIPC } from 'iframe-ipc';
+import { isTop, appendMessage } from './appendMessage';
 
 const iframeIpc = new IframeIPC('namespace', {
   transform: async (type, data) => {

@@ -1,9 +1,9 @@
-const isTop = !top || top === window;
+export const isTop = !top || top === window;
 
 const messageDiv = document.getElementById('js_htmlMessage');
 const messageDivAll = document.getElementById('js_htmlMessageAll');
 
-function appendMessage(str) {
+export function appendMessage(str) {
   const el = document.createElement('div');
 
   el.innerText = str;
@@ -34,8 +34,3 @@ function appendMessageAll(str) {
 }
 
 window.appendMessageAll = appendMessageAll;
-
-module.exports = {
-  isTop,
-  appendMessage,
-};
