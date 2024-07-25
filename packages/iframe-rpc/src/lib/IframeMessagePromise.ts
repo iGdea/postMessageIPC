@@ -57,9 +57,9 @@ export class IframeMessagePromise {
       const data = event.data?.[this.namespace] as CallMessage<any>;
 
       if (isCallMessage(data)) {
-        const { callid } = data;
-        const message = await decodeMessage(data, this.options.transform);
-        const handler = this.serverAPIs[message.api];
+        const { callid, api } = data;
+        const message: any[] = await decodeMessage(data, this.options.transform);
+        const handler = this.serverAPIs[api];
 
         if (handler) {
           const returnMessage = async <Data, Error>(message: ReturnData<Data, Error>, canTransfrom = true): Promise<void> => {
@@ -82,7 +82,7 @@ export class IframeMessagePromise {
           }
 
           try {
-            const result = await handler(event, ...message.args);
+            const result = await handler(event, ...message);
             await returnMessage({ iserr: false, data: result });
           } catch (error) {
             try {
@@ -110,10 +110,8 @@ export class IframeMessagePromise {
     const callid = uniqId();
     const originData: CallMessage<Args> = {
       encode: false,
-      message: {
-        api,
-        args,
-      },
+      message: args,
+      api,
       type: MessageType.CALL,
       callid,
     };
