@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/iGdea/iframe-ipc/issues"
   },
-  "homepage": "https://github.com/iGdea/iframe-ipc/tree/master/packages/example",
+  "homepage": "https://github.com/iGdea/iframe-ipc/tree/main/packages/example",
   "dependencies": {
     "iframe-ipc": "workspace:^",
     "iframe-ipcs": "workspace:^"

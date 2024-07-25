@@ -11,7 +11,7 @@
       "cache": true
     }
   },
-  "defaultBase": "origin/master",
+  "defaultBase": "origin/main",
   "plugins": [
     {
       "plugin": "@nx/jest/plugin",
