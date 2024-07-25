@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.3.0
+
+### Minor Changes
+
+- 增加 `onlytransform` 选项
+
 ## 2.2.0
 
 ### Minor Changes
