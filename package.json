@@ -1,26 +1,20 @@
 {
   "name": "root",
   "private": true,
-  "packageManager": "pnpm@9.1.1",
+  "packageManager": "pnpm@8.6.11",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "lint": "eslint .",
     "pub": "changeset",
     "pub2": "changeset version && changeset tag && git push --follow-tags",
     "pub3": "pnpm publish -r --no-git-checks",
     "build": "nx run-many --target=build",
     "watch": "nx run-many --target=watch --parallel=999",
-    "bench": "nx run-many --target=bench --output-style=stream",
-    "clean": "rimraf packages/*/*/node_modules && rimraf node_modules",
-    "test": "nx run-many --target=test",
-    "test-cov": "nx run-many --target=test --skip-nx-cache -- --coverage"
+    "clean": "rimraf packages/*/*/node_modules && rimraf node_modules"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
-    "@nx/jest": "19.0.3",
-    "jest": "^29.4.1",
     "nx": "19.0.3",
     "rimraf": "^1.0.3"
   }

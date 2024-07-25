@@ -5,19 +5,7 @@
       "dependsOn": ["^build"],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
-    },
-    "test": {
-      "dependsOn": ["^test"],
-      "cache": true
     }
   },
-  "defaultBase": "origin/main",
-  "plugins": [
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    }
-  ]
+  "defaultBase": "origin/main"
 }
