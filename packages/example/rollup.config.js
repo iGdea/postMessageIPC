@@ -13,7 +13,7 @@ const plugins = [
 export default [{
   input: 'src/example.js',
   output: {
-    file: 'dist/example.full.js',
+    file: 'dist/example.js',
     format: 'iife',
   },
   plugins,

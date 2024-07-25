@@ -3,7 +3,7 @@ export const isTop = !top || top === window;
 const messageDiv = document.getElementById('js_htmlMessage');
 const messageDivAll = document.getElementById('js_htmlMessageAll');
 
-export function appendMessage(str) {
+function genTextElement(str) {
   const el = document.createElement('div');
 
   el.innerText = str;
@@ -13,7 +13,11 @@ export function appendMessage(str) {
     el.style.fontSize = '12px';
   }
 
-  messageDiv.appendChild(el);
+  return el;
+}
+
+export function appendMessage(str) {
+  messageDiv.appendChild(genTextElement(str));
 
   if (isTop) {
     appendMessageAll(str);
@@ -24,15 +28,8 @@ export function appendMessage(str) {
 
 function appendMessageAll(str) {
   if (isTop) {
-    const el = document.createElement('div');
-
-    el.innerText = str;
-    if (str.trim().startsWith('>>>')) {
-      el.style.fontSize = '12px';
-    }
-
-    messageDivAll.appendChild(el);
+    messageDivAll.appendChild(genTextElement(str));
   }
 }
 
-window.appendMessageAll = appendMessageAll;
+self.appendMessageAll = appendMessageAll;

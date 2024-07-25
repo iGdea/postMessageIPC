@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
+<style>
+body, html {
+  padding: 0;
+  margin: 0;
+}
+</style>
 <body>
-  <div>
-    <input type="button" onclick="clickButton1()" value="clickButton1" />
-    <input type="button" onclick="clickButton2()" value="clickButton2" />
-    <input type="button" onclick="clickButton3()" value="clickButton3" />
-    <input type="button" onclick="clickButton4()" value="clickButton4" />
+  <div style="position: sticky; top: 0; background: #fff; padding: 5px;">
+    <input type="button" onclick="runSimple()" value="runSimple" />
+    <input type="button" onclick="runWithCallback()" value="runWithCallback" />
+    <input type="button" onclick="runSimpleAES()" value="runSimpleAES" />
+    <input type="button" onclick="runWithCallbackAES()" value="runWithCallbackAES" />
+    <h3>IFrame 测试日志</h3>
   </div>
-  <h1>测试日志</h1>
+
   <div id="js_htmlMessage"></div>
-  <script src="./dist/example.full.js"></script>
+  <script src="./dist/example.js"></script>
 </body>
 </html>

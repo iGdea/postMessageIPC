@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html>
+<style>
+body, html {
+  padding: 0;
+  margin: 0;
+}
+.page {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
 <body>
-  <h1>测试日志</h1>
-  <div id="js_htmlMessage"></div>
-  <iframe src="./iframe.html" style="width: 100%; height: 30vh;"></iframe>
-  <h1>完整测试日志</h1>
-  <div id="js_htmlMessageAll"></div>
+  <div class="page">
+    <div style="flex: 0 0 20%; overflow-y: auto;">
+      <div style="position: sticky; top: 0; background: #fff; padding: 5px;">
+        <h3>Top Frame 测试日志</h3>
+      </div>
 
-  <script src="./dist/example.full.js"></script>
+      <div id="js_htmlMessage"></div>
+    </div>
+    <div style="flex: 0 0 20%;">
+      <iframe src="./iframe.html" style="width: 100%; height: 100vh;" frameborder="no" border="0"></iframe>
+    </div>
+    <div style="flex: 1; overflow-y: auto;">
+      <div style="position: sticky; top: 0; background: #fff; padding: 5px;">
+        <h3>完整测试日志</h3>
+      </div>
+      <div id="js_htmlMessageAll"></div>
+    </div>
+  </div>
+
+  <script src="./dist/example.js"></script>
 </body>
 </html>
