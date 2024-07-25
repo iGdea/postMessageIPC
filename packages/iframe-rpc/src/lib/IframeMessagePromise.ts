@@ -41,7 +41,7 @@ export class IframeMessagePromise {
     namespace: string,
     private options: MessagePromiseOptions = {},
   ) {
-    this.namespace = `$iframe_ipc_msg/${namespace}`;
+    this.namespace = `$iframe_ipc/v1/${namespace}`;
     this.promiseCallbackHandlers = {};
     this.serverAPIs = {};
 
