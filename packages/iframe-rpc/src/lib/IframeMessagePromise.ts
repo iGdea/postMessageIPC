@@ -79,7 +79,7 @@ export class IframeMessagePromise {
               [this.namespace]: canTransfrom && this.options.transform
                 ? await encodeMessage(originData, this.options.transform)
                 : originData,
-            }, event.origin as any);
+            }, { targetOrigin: event.origin });
           }
 
           try {
@@ -103,6 +103,8 @@ export class IframeMessagePromise {
   /**
    * 通过postMessage调用外层frame中的方法
    */
+  public async callApi<Args extends any[], Result>(frame: Window, api: string, args: Args, host: string): Promise<Result>
+  public async callApi<Args extends any[], Result>(frame: MessageEventSource, api: string, args: Args): Promise<Result>
   public async callApi<Args extends any[], Result>(frame: MessageEventSource | Window, api: string, args: Args, host?: string): Promise<Result> {
     this.initClient();
 
