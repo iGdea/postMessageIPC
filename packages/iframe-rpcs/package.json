@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Bacra/iframe-ipcs.git",
+    "url": "git+ssh://git@github.com/iGdea/iframe-ipcs.git",
     "directory": "packages/iframe-ipcs"
   },
   "keywords": [
@@ -23,9 +23,9 @@
   "author": "Bacra Woo <bacra.woo@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Bacra/iframe-ipc/issues"
+    "url": "https://github.com/iGdea/iframe-ipc/issues"
   },
-  "homepage": "https://github.com/Bacra/iframe-ipc/tree/master/packages/iframe-ipcs",
+  "homepage": "https://github.com/iGdea/iframe-ipc/tree/master/packages/iframe-ipcs",
   "dependencies": {
     "crypto-js": "^4.2.0",
     "iframe-ipc": "workspace:^"
