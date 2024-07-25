@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 18.x
           registry-url: 'https://registry.npmjs.org'
-      - run: npm i -g pnpm@8.6.11
+      - run: npm i -g pnpm@8.6.11 rimraf@3
       - run: pnpm install
       - run: pnpm publish -r
         env:
