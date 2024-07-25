@@ -103,8 +103,6 @@ export class IframeMessagePromise {
   /**
    * 通过postMessage调用外层frame中的方法
    */
-  public async callApi<Args extends any[], Result>(frame: MessageEventSource, api: string, args: Args): Promise<Result>
-  public async callApi<Args extends any[], Result>(frame: Window, api: string, args: Args, host: string): Promise<Result>
   public async callApi<Args extends any[], Result>(frame: MessageEventSource | Window, api: string, args: Args, host?: string): Promise<Result> {
     this.initClient();
 
@@ -117,17 +115,11 @@ export class IframeMessagePromise {
       callid,
     };
 
-    const postData = {
+    frame.postMessage({
       [this.namespace]: this.options.transform
         ? await encodeMessage(originData, this.options.transform)
         : originData,
-    };
-
-    if (typeof host === 'string') {
-      (frame as Window).postMessage(postData, host);
-    } else {
-      frame.postMessage(postData);
-    }
+    }, { targetOrigin: host });
 
     return new Promise((resolve, reject) => {
       this.promiseCallbackHandlers[callid] = {
