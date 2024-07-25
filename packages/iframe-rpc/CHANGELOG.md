@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.1.1
+
+### Patch Changes
+
+- 增加加密传输方案 IframeIPCs
+
 ## 2.1.0
 
 ### Minor Changes
