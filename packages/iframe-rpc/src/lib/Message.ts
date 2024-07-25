@@ -53,12 +53,14 @@ function isEncodeMessage(data: any): data is EncodeMessage {
 export async function decodeMessage<T>(
   data: Message<T>,
   transform?: TransformHandler<any, T>,
+  onlytransform?: boolean,
 ): Promise<T> {
   if (isEncodeMessage(data)) {
-    if (!transform) throw new Error('Miss transform For EncodeMessage');
+    if (!transform) throw new Error(`Miss transform For ${data.api}`);
     return transform('decode', data.buffer, data.api);
   }
 
+  if (onlytransform) throw new Error(`Must transform For ${data.api}`);
   return data.message;
 }
 

@@ -20,6 +20,7 @@ type Callback = {
 };
 
 export type MessagePromiseOptions = {
+  onlytransform?: boolean,
   transform?: TransformHandler<any, any>,
 };
 
@@ -58,7 +59,7 @@ export class IframeMessagePromise {
 
       if (isCallMessage(data)) {
         const { callid, api } = data;
-        const message: any[] = await decodeMessage(data, this.options.transform);
+        const message: any[] = await decodeMessage(data, this.options.transform, this.options.onlytransform);
         const handler = this.serverAPIs[api];
 
         if (handler) {
@@ -147,7 +148,7 @@ export class IframeMessagePromise {
 
       if (isReturnMessage(data)) {
         const { callid } = data;
-        const message = await decodeMessage(data, this.options.transform);
+        const message = await decodeMessage(data, this.options.transform, this.options.onlytransform);
         const handler = this.promiseCallbackHandlers[callid];
         if (handler) {
           delete this.promiseCallbackHandlers[callid];
