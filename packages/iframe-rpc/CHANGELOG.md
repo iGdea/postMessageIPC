@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.2.0
+
+### Minor Changes
+
+- 调整 Mesage 的结构，将 api 移动到外层
+
 ## 2.1.1
 
 ### Patch Changes
