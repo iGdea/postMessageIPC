@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8" />
+  <title>iframe-ipc Example</title>
+</head>
 <style>
 body, html {
   padding: 0;
@@ -32,7 +36,10 @@ body, html {
     </div>
   </div>
 
-  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px;" id="js_footer"></div>
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.8); padding: 10px; backdrop-filter: blur(2px); display: flex; justify-content: space-between; align-items: center;" id="js_footer_warp">
+    <div id="js_footer"></div>
+    <a href="javascript:;" style="text-decoration: none;" onclick="document.getElementById('js_footer_warp').style.display = 'none'">×</a>
+  </div>
 
   <script src="./dist/pkg/iframe-ipc.js"></script>
   <script src="./dist/pkg/iframe-ipcs.js"></script>
@@ -40,8 +47,10 @@ body, html {
 
   <script>
     (function() {
+      const urlpath = location.href.split('?')[0].split('/').slice(0, -1).join('/');
       const html = ['iframe-ipc', 'iframe-ipcs'].map(filename => {
-        return `<div><b>${filename}</b>: ${location.href.split('?')[0].split('/').slice(0, -1).join('/')}/dist/pkg/${filename}.js</div>`;
+        const link = `${urlpath}/dist/pkg/${filename}.js`;
+        return `<div><b>${filename}</b>: <a href="${link}" target="_blank">${link}</a></div>`;
       });
 
       document.getElementById('js_footer').innerHTML = html.join('\n');
