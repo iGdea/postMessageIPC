@@ -78,9 +78,9 @@ export class IframeServerAPIWithTempAPI {
     const runHandler: ServerAPIExt<Args, Result> = (extdata, ...args: Args) => {
       let realExtdata: ExtData;
       if (typeof extdata === 'function') {
-        const func: TempAPI<any[], any> = async (data: TempAPIData, ...args: any[]) => {
+        const func: TempAPI<any[], any> = async (...args) => {
           try {
-            const result = await extdata(data, ...args);
+            const result = await extdata(...args);
             return result;
           } finally {
             this.undefTempAPI(func);

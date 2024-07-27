@@ -11,6 +11,9 @@ function genTextElement(str) {
 
   if (str.trim().startsWith('>>>')) {
     el.style.fontSize = '12px';
+  } else if (str.trim().startsWith('===')) {
+    el.style.fontWeight = 'bold';
+    el.style.color = 'orange';
   }
 
   return el;
