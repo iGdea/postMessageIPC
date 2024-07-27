@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/iGdea/iframe-ipc.git",
+    "url": "git+ssh://git@github.com/iGdea/postMessageIPC.git",
     "directory": "packages/example"
   },
   "keywords": [
@@ -23,9 +23,9 @@
   "author": "Bacra Woo <bacra.woo@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/iGdea/iframe-ipc/issues"
+    "url": "https://github.com/iGdea/postMessageIPC/issues"
   },
-  "homepage": "https://github.com/iGdea/iframe-ipc/tree/main/packages/example",
+  "homepage": "https://github.com/iGdea/postMessageIPC/tree/main/packages/example",
   "dependencies": {
     "iframe-ipc": "workspace:^",
     "iframe-ipcs": "workspace:^"

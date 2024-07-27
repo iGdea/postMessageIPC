@@ -1,7 +1,7 @@
 {
   "name": "iframe-ipc",
   "version": "2.3.0",
-  "description": "iframe-ipc",
+  "description": "iframe ipc",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/iGdea/iframe-ipc.git",
+    "url": "git+ssh://git@github.com/iGdea/postMessageIPC.git",
     "directory": "packages/iframe-ipc"
   },
   "keywords": [
@@ -23,9 +23,9 @@
   "author": "Bacra Woo <bacra.woo@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/iGdea/iframe-ipc/issues"
+    "url": "https://github.com/iGdea/postMessageIPC/issues"
   },
-  "homepage": "https://github.com/iGdea/iframe-ipc/tree/main/packages/iframe-ipc",
+  "homepage": "https://github.com/iGdea/postMessageIPC/tree/main/packages/iframe-ipc",
   "dependencies": {
     "emit-ts": "^1.1.0"
   },
