@@ -83,7 +83,7 @@ export class IframeServerAPIWithTempAPI {
             const result = await extdata(data, ...args);
             return result;
           } finally {
-            this.defTempAPI(func);
+            this.undefTempAPI(func);
           }
         }
 
