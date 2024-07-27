@@ -1,5 +1,12 @@
 # iframe-ipcs
 
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies [de07aab]
+  - iframe-ipc@2.4.1
+
 ## 1.1.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.4.1
+
+### Patch Changes
+
+- de07aab: 修正 callback 模式下的解绑临时函数
+
 ## 2.4.0
 
 ### Minor Changes
