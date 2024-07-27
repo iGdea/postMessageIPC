@@ -21,7 +21,10 @@ type ExtData = {
  * 注意：使用完后，利用 undefTempAPI 回收内存
  */
 export class IframeServerAPIWithTempAPI {
-  private tempAPIs: Map<TempAPI<any, any>, string>
+  private tempAPIs: Map<
+    TempAPI<any, any>,
+    { funcid: string, hosts: string[] }
+  >
 
   constructor(
     private iframeMessage: IframeMessagePromise,
@@ -64,21 +67,40 @@ export class IframeServerAPIWithTempAPI {
     );
   }
 
-  public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>): string {
+  public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>, host?: string): string {
     this.initFrameServer();
 
-    const oldfuncid = this.tempAPIs.get(handler);
-    if (oldfuncid) return oldfuncid;
+    const oldfuncInfo = this.tempAPIs.get(handler);
+    if (oldfuncInfo) {
+      if (!host || host === '*') {
+        oldfuncInfo.hosts = ['*'];
+      } else if (oldfuncInfo.hosts[0] !== '*') {
+        oldfuncInfo.hosts.push(host);
+      }
+
+      return oldfuncInfo.funcid;
+    }
 
     const funcid = uniqId();
     const apikey = `tempapi/${funcid}`;
+    const funcInfo = {
+      funcid,
+      hosts: [host || '*'],
+    };
 
     this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => {
+      if (funcInfo.hosts[0] !== '*') {
+        if (!event.origin) throw Error('Check Host Fail: Miss origin');
+        if (!funcInfo.hosts.some(v => v === event.origin)) {
+          throw Error(`Check Host Fail, origin: ${event.origin}`);
+        }
+      }
+
       const callTempApi = this.genCallTempApi(event.source);
       return handler({ event, callTempApi }, ...args);
     };
 
-    this.tempAPIs.set(handler, funcid);
+    this.tempAPIs.set(handler, funcInfo);
 
     return funcid;
   }
@@ -88,8 +110,8 @@ export class IframeServerAPIWithTempAPI {
       const apikey = `tempapi/${funcid}`;
       delete this.iframeMessage.serverAPIs[apikey];
 
-      for (const [val, key] of this.tempAPIs) {
-        if (key === funcid) this.tempAPIs.delete(val);
+      for (const [handler, { funcid: key }] of this.tempAPIs) {
+        if (key === funcid) this.tempAPIs.delete(handler);
       }
     } else {
       const handler = funcid;
