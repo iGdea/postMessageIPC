@@ -38,6 +38,7 @@ jobs:
       - run: npm i -g pnpm@8.6.11 rimraf@3
       - run: pnpm install
       - run: npm run build
+      - run: mkdir docs -p && cp packages/example/page docs/example -rf
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -45,7 +46,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: 'packages/example'
+          path: 'docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

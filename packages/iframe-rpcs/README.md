@@ -32,6 +32,12 @@ iframeIpc.initFrameServer();
 serverApi(1234).then((result) => console.log(result));
 ```
 
+
+## Example
+
+[click](https://igdea.github.io/postMessageIPC/example/)
+
+
 [npm-image]: https://img.shields.io/npm/v/iframe-ipcs.svg
 [downloads-image]: https://img.shields.io/npm/dm/iframe-ipcs.svg
 [npm-url]: https://www.npmjs.org/package/iframe-ipcs

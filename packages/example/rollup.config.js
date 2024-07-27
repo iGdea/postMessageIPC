@@ -11,9 +11,9 @@ const plugins = [
 ];
 
 export default [{
-  input: 'src/example.js',
+  input: 'page/src/example.js',
   output: {
-    file: 'dist/example.js',
+    file: 'page/dist/example.js',
     format: 'iife',
   },
   plugins,

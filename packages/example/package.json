@@ -2,7 +2,7 @@
   "name": "example",
   "version": "0.0.1",
   "description": "example",
-  "main": "dist/example.js",
+  "main": "page/dist/example.js",
   "type": "module",
   "private": true,
   "scripts": {

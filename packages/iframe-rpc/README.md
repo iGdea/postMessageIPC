@@ -50,6 +50,11 @@ serverApi2({ funcids: [funcid] }, arg11);
 ```
 
 
+## Example
+
+[click](https://igdea.github.io/postMessageIPC/example/)
+
+
 [npm-image]: https://img.shields.io/npm/v/iframe-ipc.svg
 [downloads-image]: https://img.shields.io/npm/dm/iframe-ipc.svg
 [npm-url]: https://www.npmjs.org/package/iframe-ipc
