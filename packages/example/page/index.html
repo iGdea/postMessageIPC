@@ -15,6 +15,18 @@ body, html {
   width: 100vw;
   height: 100vh;
 }
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(238, 238, 238, 0.8);
+  padding: 10px;
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>
 <body>
   <div class="page">
@@ -36,7 +48,7 @@ body, html {
     </div>
   </div>
 
-  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.8); padding: 10px; backdrop-filter: blur(2px); display: flex; justify-content: space-between; align-items: center;" id="js_footer_warp">
+  <div class="footer" id="js_footer_warp">
     <div id="js_footer"></div>
     <a href="javascript:;" style="text-decoration: none;" onclick="document.getElementById('js_footer_warp').style.display = 'none'">×</a>
   </div>
