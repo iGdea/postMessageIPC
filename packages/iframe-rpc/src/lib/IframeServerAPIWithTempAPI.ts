@@ -23,7 +23,7 @@ type ExtData = {
 export class IframeServerAPIWithTempAPI {
   private tempAPIs: Map<
     TempAPI<any, any>,
-    { funcid: string, hosts: string[] }
+    { funcid: string, origins: string[] }
   >
 
   constructor(
@@ -75,15 +75,15 @@ export class IframeServerAPIWithTempAPI {
     );
   }
 
-  public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>, host?: string): string {
+  public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>, origin?: string): string {
     this.initFrameServer();
 
     const oldfuncInfo = this.tempAPIs.get(handler);
     if (oldfuncInfo) {
-      if (!host || host === '*') {
-        oldfuncInfo.hosts = ['*'];
-      } else if (oldfuncInfo.hosts[0] !== '*') {
-        oldfuncInfo.hosts.push(host);
+      if (!origin || origin === '*') {
+        oldfuncInfo.origins = ['*'];
+      } else if (oldfuncInfo.origins[0] !== '*') {
+        oldfuncInfo.origins.push(origin);
       }
 
       return oldfuncInfo.funcid;
@@ -93,13 +93,13 @@ export class IframeServerAPIWithTempAPI {
     const apikey = `tempapi/${funcid}`;
     const funcInfo = {
       funcid,
-      hosts: [host || '*'],
+      origins: [origin || '*'],
     };
 
     this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => {
-      if (funcInfo.hosts[0] !== '*') {
+      if (funcInfo.origins[0] !== '*') {
         if (!event.origin) throw Error('Check Host Fail: Miss origin');
-        if (!funcInfo.hosts.some(v => v === event.origin)) {
+        if (!funcInfo.origins.some(v => v === event.origin)) {
           throw Error(`Check Host Fail, origin: ${event.origin}`);
         }
       }
