@@ -32,6 +32,20 @@ body, html {
     </div>
   </div>
 
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px;" id="js_footer"></div>
+
+  <script src="./dist/pkg/iframe-ipc.js"></script>
+  <script src="./dist/pkg/iframe-ipcs.js"></script>
   <script src="./dist/example.js"></script>
+
+  <script>
+    (function() {
+      const html = ['iframe-ipc', 'iframe-ipcs'].map(filename => {
+        return `<div><b>${filename}</b>: ${location.href.split('?')[0].split('/').slice(0, -1).join('/')}/dist/pkg/${filename}.js</div>`;
+      });
+
+      document.getElementById('js_footer').innerHTML = html.join('\n');
+    })();
+  </script>
 </body>
 </html>
