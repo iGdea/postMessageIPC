@@ -1,8 +1,13 @@
 import type { IframeMessagePromise } from './IframeMessagePromise';
 
 export type ServerAPIOptions = {
-  serverFrame?: Window,
-  host?: string,
+  server?: {
+    frame?: Window,
+    origin?: string,
+  },
+  client?: {
+    origin?: string,
+  },
 };
 
 export class IframeServerAPI {
@@ -21,13 +26,23 @@ export class IframeServerAPI {
       throw new Error(`Duplicate Definition ServerAPI: ${api}`);
     }
 
-    this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => handler(...args);
+    this.iframeMessage.serverAPIs[apikey] = (event, ...args: Args) => {
+      const clientOrigin = this.optioins.client?.origin;
+      if (clientOrigin) {
+        if (!event.origin) throw Error('Check Host Fail: Miss origin');
+        if (event.origin !== clientOrigin) {
+          throw Error(`Check Host Fail, origin: ${event.origin}`);
+        }
+      }
+
+      return handler(...args);
+    };
 
     return (...args: Args) => this.iframeMessage.callApi<Args, Result>(
-      this.optioins.serverFrame || parent,
+      this.optioins.server?.frame || parent,
       apikey,
       args,
-      this.optioins.host || '*',
+      this.optioins.server?.origin || '*',
     );
   }
 }

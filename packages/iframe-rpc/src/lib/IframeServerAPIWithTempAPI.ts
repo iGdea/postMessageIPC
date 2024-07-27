@@ -50,6 +50,14 @@ export class IframeServerAPIWithTempAPI {
     }
 
     this.iframeMessage.serverAPIs[apikey] = (event, extdata: ExtData, ...args: Args) => {
+      const clientOrigin = this.optioins.client?.origin;
+      if (clientOrigin) {
+        if (!event.origin) throw Error('Check Host Fail: Miss origin');
+        if (event.origin !== clientOrigin) {
+          throw Error(`Check Host Fail, origin: ${event.origin}`);
+        }
+      }
+
       const callTempApi = this.genCallTempApi(event.source);
       const handlers = extdata.funcids.reduce((map, funcid) => {
         map[funcid] = (...args: any[]) => callTempApi(funcid, ...args);
@@ -60,10 +68,10 @@ export class IframeServerAPIWithTempAPI {
     };
 
     return (extdata: ExtData, ...args: Args) => this.iframeMessage.callApi<[ExtData, ...Args], Result>(
-      this.optioins.serverFrame || parent,
+      this.optioins.server?.frame || parent,
       apikey,
       [extdata, ...args],
-      this.optioins.host || '*',
+      this.optioins.server?.origin || '*',
     );
   }
 
