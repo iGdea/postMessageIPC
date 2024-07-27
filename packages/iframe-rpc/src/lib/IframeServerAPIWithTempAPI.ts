@@ -14,6 +14,14 @@ type ExtData = {
 };
 
 
+type ServerAPIExt<Args extends any[], Result> = {
+  (extdata: ExtData, ...args: Args): Promise<Result>
+  /**
+   * callback模式，自动生成funcid，调用后自动注销
+   */
+  (callback: TempAPI<any[], any>, ...args: Args): Promise<Result>
+}
+
 
 /**
  * 创建和管理临时API，用于事件触发等函数定义
@@ -39,10 +47,10 @@ export class IframeServerAPIWithTempAPI {
   public defServerAPIExt<Args extends any[], Result>(
     api: string,
     handler: (
-      data: TempAPIData & { handlers: { [funcid: string]: Function }, extdata: ExtData },
+      data: TempAPIData & { handlers: { [funcid: string]: Function } },
       ...args: Args
     ) => Promise<Result> | Result,
-  ): (extdata: ExtData, ...args: Args) => Promise<Result> {
+  ): ServerAPIExt<Args, Result> {
     const apikey = `svr_api_ext/${api}`;
 
     if (this.iframeMessage.serverAPIs[apikey]) {
@@ -64,15 +72,36 @@ export class IframeServerAPIWithTempAPI {
         return map;
       }, {} as { [funcid: string]: Function });
 
-      return handler({ event, handlers, extdata, callTempApi }, ...args);
+      return handler({ event, handlers, callTempApi }, ...args);
     };
 
-    return (extdata: ExtData, ...args: Args) => this.iframeMessage.callApi<[ExtData, ...Args], Result>(
-      this.optioins.server?.frame || parent,
-      apikey,
-      [extdata, ...args],
-      this.optioins.server?.origin || '*',
-    );
+    const runHandler: ServerAPIExt<Args, Result> = (extdata, ...args: Args) => {
+      let realExtdata: ExtData;
+      if (typeof extdata === 'function') {
+        const func: TempAPI<any[], any> = async (data: TempAPIData, ...args: any[]) => {
+          try {
+            const result = await extdata(data, ...args);
+            return result;
+          } finally {
+            this.defTempAPI(func);
+          }
+        }
+
+        const funcid = this.defTempAPI(func, location.origin);
+        realExtdata = { funcids: [funcid] };
+      } else {
+        realExtdata = extdata;
+      }
+
+      return this.iframeMessage.callApi<[ExtData, ...Args], Result>(
+        this.optioins.server?.frame || parent,
+        apikey,
+        [realExtdata, ...args],
+        this.optioins.server?.origin || '*',
+      );
+    }
+
+    return runHandler;
   }
 
   public defTempAPI<Args extends any[], Result>(handler: TempAPI<Args, Result>, origin?: string): string {
