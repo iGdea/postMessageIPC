@@ -1,5 +1,11 @@
 # iframe-ipc
 
+## 2.5.0
+
+### Minor Changes
+
+- 7106bbe: 增加低版本浏览器支持
+
 ## 2.4.1
 
 ### Patch Changes

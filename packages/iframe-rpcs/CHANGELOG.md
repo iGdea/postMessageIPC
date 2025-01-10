@@ -1,5 +1,16 @@
 # iframe-ipcs
 
+## 1.2.0
+
+### Minor Changes
+
+- 7106bbe: 增加低版本浏览器支持
+
+### Patch Changes
+
+- Updated dependencies [7106bbe]
+  - iframe-ipc@2.5.0
+
 ## 1.1.3
 
 ### Patch Changes
