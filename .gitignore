@@ -11,5 +11,6 @@ packages/**/package-lock.json
 .history
 .nyc_output
 dist
+browser_dist
 
 .nx/cache

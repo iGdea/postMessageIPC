@@ -3,11 +3,14 @@
   "version": "2.4.1",
   "description": "iframe ipc",
   "main": "dist/index.js",
+  "browser": "browser_dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepack": "npx rimraf dist && npm run build --if-present",
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "prepack": "npx rimraf dist browser_dist && npm run build --if-present",
+    "build": "npx tsc && npm run build:babel",
+    "build:babel": "npx babel dist --out-dir browser_dist",
+    "watch": "npx tsc --watch",
+    "watch:all": "npx tsc --watch & npm run build:babel -- --watch"
   },
   "repository": {
     "type": "git",
@@ -27,9 +30,6 @@
   },
   "homepage": "https://github.com/iGdea/postMessageIPC/tree/main/packages/iframe-ipc",
   "dependencies": {
-    "emit-ts": "^1.1.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.4.5"
+    "emit-ts": "^1.2.0"
   }
 }
